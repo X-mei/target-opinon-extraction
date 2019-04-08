@@ -14,3 +14,7 @@ Aside from this, several constant should be noticed while running this code on y
             start = 24001
             end = 24341
 ```
+* The filtering constant as one critical parameter, are define here:
+```
+for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
+```
