@@ -143,11 +143,9 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
             start = ind * 1000 - 999
             end = ind * 1000
         else:
+            start = 24001
+            end = 24341
             flag = 0
-            continue
-            #start = 24001
-            #end = 24341
-            #flag = 0
         print(ind, start, end, '**************')
         # Import tokenized (after segmentation) data
         with open('seg_data.csv', 'r', encoding='UTF-8') as csvfile1:
