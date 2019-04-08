@@ -6,7 +6,7 @@ import pandas as pd
 from math import log,pow
 from sklearn.preprocessing import MinMaxScaler
 from rules import *
-# 获得每一句中的依存关系数据
+# Extract dependency pattern in each sentence
 def get_denp(dependence):
     pattern_all = []
     for sentence in dependence:
@@ -17,7 +17,7 @@ def get_denp(dependence):
         pattern_all.append(pattern)
     return pattern_all
 
-# 将分词数据和依存关系合并
+# Combine tokenized result with dependency pattern result
 def data_gather(dependence,segment):
     n = len(dependence)
     m = len(segment)
@@ -26,7 +26,7 @@ def data_gather(dependence,segment):
         dependence[i] = dependence[i] + segment[i]
     return dependence
 
-# 计算Supp值
+# Calculate supp value
 def calc_supp(node_1,node_2,data):
     length = len(data)
     all = []
@@ -74,7 +74,7 @@ def calc_supp(node_1,node_2,data):
         array_norm = minMax.fit_transform(all)
     return array_norm
 
-# 计算confidence
+# Calculate confidence
 def cal_pattern_conf(opinion,target,pattern,cluster):
     output = []
     for ele in pattern:
@@ -84,7 +84,7 @@ def cal_pattern_conf(opinion,target,pattern,cluster):
         output.append([ele,score])
     return output
 
-# 计算T
+# Calculate T
 def calc_T(T):
     #print(T)
     try:
@@ -93,7 +93,7 @@ def calc_T(T):
     except:
         return 0
 
-# 计算参数矩阵
+# Calculate parameter matrix
 def score_matrix(W1,W2):
     S0 = np.ones((1,np.shape(W1)[0]))
     S1 = np.ones((1,np.shape(W2)[1]))
@@ -106,6 +106,7 @@ def score_matrix(W1,W2):
     En2 = En0 + S1
     return S2.tolist()[0],M2.tolist()[0],En2.tolist()[0]
 
+# Initialize min max normalization
 def MinMaxNorm(orig):
     Min = min(orig)
     Max = max(orig)
@@ -113,6 +114,7 @@ def MinMaxNorm(orig):
         orig[n] = (orig[n] - Min) / (Max - Min)
     return orig
 
+# Filtering process
 def refinement(arr,score):
     for i in range(0,len(score)-1):
 
@@ -125,9 +127,11 @@ def refinement(arr,score):
     return arr
 
 le = 11
-for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
+# Initilize opinion word seeds & target word seeds
+op = set(input('Input seed opinion words separated by comma:').split(','))
+ta = set(input('Input seed target words separated by comma:').split(','))
 
-    # 读取分词数据
+for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
     ind = 1
     flag = 1
     all_pairs = []
@@ -135,17 +139,18 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
         all_pairs.append([])
     all_cluster = []
     while flag:
-        if ind < 2:
+        if ind < 25:
             start = ind * 1000 - 999
             end = ind * 1000
         else:
             flag = 0
             continue
-            #start = 4001  # 24001
-            #end = 4999  # 24341
+            #start = 24001
+            #end = 24341
             #flag = 0
         print(ind, start, end, '**************')
-        with open('segment4.csv', 'r', encoding='UTF-8') as csvfile1:
+        # Import tokenized (after segmentation) data
+        with open('seg_data.csv', 'r', encoding='UTF-8') as csvfile1:
             reader = csv.reader(csvfile1)
             sentence = [ele[0] for ele in reader]
             segment = sentence[start:end + 1]
@@ -154,8 +159,8 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
                 segment[k] = eval(one)
                 segment[k] = [x for j in segment[k] for x in j]
                 k = k + 1
-                # 读取依存关系数据
-        with open('data_dep1.csv', 'r', encoding='UTF-8') as csvfile2:
+        # Import dependency parsing result data
+        with open('dep_data.csv', 'r', encoding='UTF-8') as csvfile2:
             reader = csv.reader(csvfile2)
             data = [row for row in reader]
             data = data[start:end + 1]
@@ -173,12 +178,8 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
         # for ele in dependence:
         cluster = data_gather(pattern_data, segment)
         all_cluster += cluster
-        opinion = {'负责', '好', '精彩', '适当', '有意思', '抽象', '明确',
-                   '易懂', '详细', '耐心', '仔细', '生动', '得当',
-                   '幽默', '新颖', '充分''突出', '有趣', '热情', '丰富', '无聊',
-                   '细心', '认真', '单一', '清晰', '广泛', '严谨', '深入', '活跃', '风趣', '枯燥', '活泼',
-                   '严格', '多', '提高', '棒', '尽责', '少', '较多', '不足', '敬业', '开放', '到位'}
-        target = {'老师', '方法', '教学', '态度', '讲课', '上课', '作业', '能力', '交流', '管理', '时间', '课时', '效果'}
+        opinion = op
+        target = ta
         pattern = {'mmod', 'dobj'}
         pattern_1 = {'advmod'}
         pattern_2 = {'nsubj'}
@@ -235,9 +236,7 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
 
     test = pd.DataFrame(data=all_pairs)
     #file = 'pairs' + str(le) + '.csv'
-    test.to_csv('pairs8.csv', index=False, encoding='utf_8_sig', sep=',')
-    test2 = pd.DataFrame(data=all_cluster)
-    test2.to_csv('cluster.csv', index=False, encoding='utf_8_sig', sep=',')
+    test.to_csv('pairs.csv', index=False, encoding='utf_8_sig', sep=',')
     le += 1
     # print(cal_pattern_conf(opinion,target,pattern,cluster))
     print(opinion)
