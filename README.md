@@ -8,3 +8,9 @@ Aside from this, several constant should be noticed while running this code on y
 ```
     for o in range(24341):
 ```
+```
+        else:
+            flag = 0
+            start = 24001
+            end = 24341
+```
