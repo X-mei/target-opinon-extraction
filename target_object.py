@@ -191,7 +191,6 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
                  'R32(dependence[i],opinion,pattern,all_pairs[start+i-1])', 'R41(dependence[i],target)',
                  'R42(dependence[i],opinion)']
         # print(calc_supp(pattern,target,cluster))
-
         count = 0
         goon = True
         iteration = 0
@@ -213,14 +212,12 @@ for cons in [1]:#,1.5,2,2.5,3,3.5,4,4.5,5]:
                         # score_o = MinMaxNorm(score_o)
                         # score_p = MinMaxNorm(score_p)
                         # score_t = MinMaxNorm(score_t)
-
                         print(score_o)
                         print(opinion)
                         print('###############')
-
-                        opinion = refinement(opinion, score_o)
-                        pattern = refinement(pattern, score_p)
-                        target = refinement(target, score_t)
+                        opinion = refinement(opinion, score_o, cons)
+                        pattern = refinement(pattern, score_p, cons)
+                        target = refinement(target, score_t, cons)
                         opinion = set(opinion)
                         target = set(target)
                         pattern = set(pattern)
